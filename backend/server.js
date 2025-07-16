@@ -27,14 +27,15 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 
+
 app.get('/api/products', async (req, res) => {
   try {
     const {
-      category = '', 
+      category = '',  
       limit = 10,
       page = 1,
       sort = 'rating', 
-      order = 'desc', 
+      order = 'desc',  
     } = req.query;
 
     const filter = category ? { category } : {};
@@ -67,22 +68,12 @@ app.delete('/api/products/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-app.post('/api/products', async (req, res) => {
-  try {
-    const newProduct = new Product(req.body);
-    const saved = await newProduct.save();
-    res.status(201).json(saved);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
 app.put('/api/products/:id', async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,       
-      req.body,            
-      { new: true }        
+      req.params.id,
+      req.body,
+      { new: true }
     );
 
     if (!updatedProduct) {
@@ -94,6 +85,18 @@ app.put('/api/products/:id', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+app.post('/api/products', async (req, res) => {
+  console.log('POST /api/products body:', req.body);
+  try {
+    const newProduct = new Product(req.body);
+    const saved = await newProduct.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    console.error('Error saving product:', err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
